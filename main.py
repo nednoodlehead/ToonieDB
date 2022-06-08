@@ -23,6 +23,13 @@ master_notebook.add(add_data_frame, text="Add Data")
 master_notebook.add(view_data_frame, text="View Data")
 view_data_frame.configure()
 
+# Good'ol Functions. Checks for invalid inputs
+
+def name_check(name):
+    pass
+
+
+
 # Variables that ttk.Entry & tk.Text outputs to. Defined as data_var.
 # Must have some type of function to sort through the checkboxes and detirmines which has value. and use it
 name_var = tk.StringVar()
