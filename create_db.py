@@ -23,6 +23,7 @@ def create_main():
     Age Int,
     Gender Text,
     Type_of_contact Text,
+    Contact_info Text,
     Problem Text,
     Solution Text,
     Device_type Text,
