@@ -22,7 +22,6 @@ def create_main():
     (Name Text,
     Age Int,
     Gender Text,
-    Active Bool,
     Type_of_contact Text,
     Problem Text,
     Solution Text,
