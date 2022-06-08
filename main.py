@@ -1,6 +1,8 @@
 # import sqlite3
 import tkinter as tk
 from tkinter import ttk
+import uuid
+from tkinter import messagebox
 
 # Settings for the app
 root = tk.Tk()
@@ -23,15 +25,60 @@ master_notebook.add(add_data_frame, text="Add Data")
 master_notebook.add(view_data_frame, text="View Data")
 view_data_frame.configure()
 
-# Good'ol Functions. Checks for invalid inputs
+
+# Good'ol Functions. Checks for invalid inputs / cleans up poor inputs
 
 def name_check(name):
-    pass
+    to_return = ""
+    for i in range(len(name)):
+        if i == 0:
+            to_return += name[i].upper()
+        else:
+            to_return += name[i].lower()
+    return to_return
 
 
+def uuid_gen():
+    return str(uuid.uuid4())
 
+
+def contact_type_check():
+    return_list = []
+    check_list = [
+        is_facebook.get(),
+        is_call.get(),
+        is_email.get()
+    ]
+    for item in check_list:
+        if item != "":
+            return_list.append(item)
+    print(return_list)
+    if not return_list:
+        tk.messagebox.showerror(message='You need to have to have a value for Contact Type')
+    return return_list
+
+
+def device_type_check():
+    return_list = []
+    check_list = [
+        is_desktop.get(),
+        is_phone.get(),
+        is_laptop.get()
+    ]
+    for item in check_list:
+        if item != "":
+            return_list.append(item)
+    print(return_list)
+    if not return_list:
+        tk.messagebox.showerror(message='You need to have to have a value for Device Type')
+    return return_list
+
+
+tk.Button(add_data_frame, text="TEst for contact type", command=contact_type_check).place(x=200, y=200)
+tk.Button(add_data_frame, text="Test for device type", command=device_type_check).place(x=200, y=240)
 # Variables that ttk.Entry & tk.Text outputs to. Defined as data_var.
 # Must have some type of function to sort through the checkboxes and detirmines which has value. and use it
+
 name_var = tk.StringVar()
 age_var = tk.IntVar()
 gender_var = tk.StringVar()
@@ -42,7 +89,12 @@ date_of_contact_var = tk.StringVar()
 time_of_contact_var = tk.StringVar()
 difficulty_var = tk.StringVar()
 payment_var = tk.StringVar()
-
+is_facebook = tk.StringVar()
+is_email = tk.StringVar()
+is_call = tk.StringVar()
+is_desktop = tk.StringVar()
+is_phone = tk.StringVar()
+is_laptop = tk.StringVar()
 
 # Labels and Input boxes for Data with (snake_case) format data_label or data_entry
 
@@ -66,16 +118,18 @@ gender_entry_male.state(["!alternate"])
 gender_entry_female.state(["!alternate"])
 gender_entry_other.state(["!alternate"])
 
-# gender_entry = ttk.Entry(add_data_frame, textvariable=gender_var)
 contact_type_label = ttk.Label(add_data_frame, text="Contact Type:")
-contact_type_info = ttk.Label(add_data_frame, text="FaceBook    Email   Phone")
-contact_type_entry_facebook = ttk.Checkbutton(add_data_frame, onvalue="FaceBook", style="default.TCheckbutton")
-contact_type_entry_email = ttk.Checkbutton(add_data_frame, onvalue="Email", style="default.TCheckbutton")
-contact_type_entry_phone = ttk.Checkbutton(add_data_frame, onvalue="Phone", style="default.TCheckbutton")
+contact_type_info = ttk.Label(add_data_frame, text="FaceBook    Email     Call  ")
+contact_type_entry_facebook = ttk.Checkbutton(add_data_frame, offvalue="", onvalue="FaceBook",
+                                              style="default.TCheckbutton", variable=is_facebook)
+contact_type_entry_email = ttk.Checkbutton(add_data_frame, offvalue="", onvalue="Email", style="default.TCheckbutton",
+                                           variable=is_email)
+contact_type_entry_call = ttk.Checkbutton(add_data_frame, offvalue="", onvalue="Call", style="default.TCheckbutton",
+                                          variable=is_call)
 
 contact_type_entry_facebook.state(["!alternate"])
 contact_type_entry_email.state(["!alternate"])
-contact_type_entry_phone.state(["!alternate"])
+contact_type_entry_call.state(["!alternate"])
 
 problem_label = ttk.Label(add_data_frame, text="Problem:")
 # tk.Text needed because ttk.Entry cannot support multiple lines
@@ -91,15 +145,17 @@ solution_var = problem_entry.get('1.0', 'end')
 
 device_type_label = ttk.Label(add_data_frame, text="Desktop    Phone    Laptop")
 device_type_label_other = ttk.Label(add_data_frame, text="Other?")
-device_type_entry_desktop = ttk.Checkbutton(add_data_frame, onvalue="Desktop", style="default.TCheckbutton")
-device_type_entry_phone = ttk.Checkbutton(add_data_frame, onvalue="Phone", style="default.TCheckbutton")
-device_type_entry_laptop = ttk.Checkbutton(add_data_frame, onvalue="Laptop", style="default.TCheckbutton")
+device_type_entry_desktop = ttk.Checkbutton(add_data_frame, onvalue="Desktop", style="default.TCheckbutton",
+                                            variable=is_desktop, offvalue="")
+device_type_entry_phone = ttk.Checkbutton(add_data_frame, onvalue="Phone", style="default.TCheckbutton",
+                                          variable=is_phone, offvalue="")
+device_type_entry_laptop = ttk.Checkbutton(add_data_frame, onvalue="Laptop", style="default.TCheckbutton",
+                                           variable=is_laptop, offvalue="")
 device_type_entry_other = ttk.Entry(add_data_frame, textvariable=device_type_var)
 
 device_type_entry_desktop.state(["!alternate"])
 device_type_entry_phone.state(["!alternate"])
 device_type_entry_laptop.state(["!alternate"])
-
 
 date_of_service_label = ttk.Label(add_data_frame, text="Date of service: (YY/MM/DD)")
 date_of_service_entry = ttk.Entry(add_data_frame, textvariable=date_of_service_var)
@@ -133,7 +189,7 @@ contact_type_label.place(x=20, y=180)
 contact_type_info.place(x=20, y=200)
 contact_type_entry_facebook.place(x=30, y=220)
 contact_type_entry_email.place(x=85, y=220)
-contact_type_entry_phone.place(x=140, y=220)
+contact_type_entry_call.place(x=140, y=220)
 
 problem_label.place(x=450, y=20)
 problem_entry.place(x=450, y=40)
@@ -162,34 +218,5 @@ difficulty_entry.place(x=20, y=520)
 
 payment_label.place(x=20, y=560)
 payment_entry.place(x=20, y=580)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 root.mainloop()
