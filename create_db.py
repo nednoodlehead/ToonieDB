@@ -1,7 +1,6 @@
 
 from pathlib import Path
 import sqlite3
-
 # Used to create the database and all of it's assosciated fields
 
 
@@ -30,7 +29,10 @@ def create_main():
     Date_of_contact Text,
     Date_of_service Text,
     Difficulty Int,
-    Payment Int)
+    Payment Int,
+    Unique_ID Text NOT NULL PRIMARY KEY)
     """)
     con.commit()
+
+
 check_out()
