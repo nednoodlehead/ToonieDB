@@ -41,9 +41,16 @@ def name_check(name):
 def uuid_gen():
     return str(uuid.uuid4())
 
+def null_check():
+    name = name_var.get()
+    age = age_var.get()
+    gender = gender_var.get()
+    contact_type = contact_type_var.get()
+
 
 def contact_type_check():
-    return_list = []
+    return_str = ''
+    sum_check = []
     check_list = [
         is_facebook.get(),
         is_call.get(),
@@ -51,27 +58,33 @@ def contact_type_check():
     ]
     for item in check_list:
         if item != "":
-            return_list.append(item)
-    print(return_list)
-    if not return_list:
-        tk.messagebox.showerror(message='You need to have to have a value for Contact Type')
-    return return_list
+            return_str = item
+            sum_check.append(item)
+    if len(sum_check) != 1:
+        tk.messagebox.showerror(message='You need to have to have a valid # of values for Contact Type')
+    else:
+        print(return_str)
+        return return_str
 
 
 def device_type_check():
-    return_list = []
+    return_str = ''
+    sum_check = []
     check_list = [
         is_desktop.get(),
         is_phone.get(),
-        is_laptop.get()
+        is_laptop.get(),
+        device_type_var.get()
     ]
     for item in check_list:
         if item != "":
-            return_list.append(item)
-    print(return_list)
-    if not return_list:
-        tk.messagebox.showerror(message='You need to have to have a value for Device Type')
-    return return_list
+            return_str = item
+            sum_check.append(item)
+    if len(sum_check) != 1:
+        tk.messagebox.showerror(message='You need to have to have a valid # of values for Contact Type')
+    else:
+        print(return_str)
+        return return_str
 
 
 tk.Button(add_data_frame, text="TEst for contact type", command=contact_type_check).place(x=200, y=200)
