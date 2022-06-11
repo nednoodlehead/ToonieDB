@@ -26,6 +26,7 @@ def create_main():
     Problem Text,
     Solution Text,
     Device_type Text,
+    Time_of_contact Text,
     Date_of_contact Text,
     Date_of_service Text,
     Difficulty Int,
