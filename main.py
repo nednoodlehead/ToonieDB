@@ -1,8 +1,8 @@
-# import sqlite3
 import tkinter as tk
 from tkinter import ttk
 import uuid
 from tkinter import messagebox
+import insert_data
 
 # Settings for the app
 root = tk.Tk()
@@ -10,7 +10,7 @@ root.geometry("825x700+250+100")
 root.title("ToonieDB")
 root.resizable(False, False)
 
-# Defining the style for the two tkinter frames
+# Defining the style for the two tkinter frames & checkboxes
 main_style = ttk.Style()
 main_style.configure("TFrame", background="#656489")
 checkbox_style = ttk.Style()
@@ -23,7 +23,6 @@ add_data_frame.pack(fill='both', expand=True)
 master_notebook.pack()
 master_notebook.add(add_data_frame, text="Add Data")
 master_notebook.add(view_data_frame, text="View Data")
-view_data_frame.configure()
 
 
 # Good'ol Functions. Checks for invalid inputs / cleans up poor inputs
@@ -41,11 +40,83 @@ def name_check(name):
 def uuid_gen():
     return str(uuid.uuid4())
 
+
 def null_check():
-    name = name_var.get()
-    age = age_var.get()
-    gender = gender_var.get()
-    contact_type = contact_type_var.get()
+    # Perhaps in the future this should have 'smarter' checking. CHeck for stuff that isn't just null
+    # solution and problem don't have .get() because they are just assignments to strings that exist
+    # list_of_error used to return all keys of values that failed to be entered
+    list_of_error = []
+    failed_bool = False
+    list_of_data = {
+        "Name Field": name_var.get(),
+        "Age Field": age_var.get(),
+        "Gender Field": gender_check(),
+        "Contact Type Field": contact_type_check(),
+        "Contact Info Field": contact_info_var.get(),
+        "Problem Field": problem_entry.get('1.0', 'end-1c'),  # Produces '\n'
+        "Solution Field": solution_entry.get('1.0', 'end-1c'),
+        "Device Type Field": device_type_check(),
+        "Date of Contact Field": date_of_contact_var.get(),
+        "Date of Service Field": date_of_service_var.get(),
+        "Difficulty Field": difficulty_var.get(),
+        "Payment Field": payment_var.get(),
+        "Should never fail": uuid_gen()
+    }
+    for entry in list_of_data.items():
+        if entry[1] == '':
+            failed_bool = True
+            list_of_error.append(entry[0])
+        print(f"entry: {entry[1]}")
+    if failed_bool is True:
+        tk.messagebox.showerror(message=f"Dta missing: \n{list_of_error}")
+    else:
+        print("Full data, moving to process...")
+        print(f'All data: {list_of_data.values()}')
+        name_entry.delete(0, 'end')
+        age_entry.delete(0, 'end')
+
+        gender_entry_male.state(["!alternate"])
+        gender_entry_female.state(["!alternate"])
+        gender_entry_other.state(["!alternate"])
+
+        contact_info_entry.delete(0, 'end')
+
+        contact_type_entry_facebook.state(["!alternate"])
+        contact_type_entry_email.state(["!alternate"])
+        contact_type_entry_call.state(["!alternate"])
+
+        problem_entry.delete("1.0", 'end')
+        solution_entry.delete("1.0", 'end')
+
+        device_type_entry_desktop.state(["selected"])
+        device_type_entry_desktop.state(["!alternate"])
+        device_type_entry_phone.state(["!alternate"])
+        device_type_entry_laptop.state(["!alternate"])
+
+        date_of_contact_entry.delete(0, 'end')
+        date_of_service_entry.delete(0, 'end')
+        difficulty_entry.delete(0, 'end')
+        payment_entry.delete(0, 'end')
+        # insert_data.add_data(list_of_data.values())
+
+
+def gender_check():
+    return_str = ''
+    sum_check = []
+    check_list = [
+        gender_entry_male_var.get(),
+        gender_entry_female_var.get(),
+        gender_entry_other_var.get()
+    ]
+    for item in check_list:
+        if item != "":
+            return_str = item
+            sum_check.append(item)
+    if len(sum_check) != 1:
+        tk.messagebox.showerror(message='You need to have a valid # of values for Contact Type')
+    else:
+        print(return_str)
+        return return_str
 
 
 def contact_type_check():
@@ -61,7 +132,7 @@ def contact_type_check():
             return_str = item
             sum_check.append(item)
     if len(sum_check) != 1:
-        tk.messagebox.showerror(message='You need to have to have a valid # of values for Contact Type')
+        tk.messagebox.showerror(message='You need to have a valid # of values for Contact Type')
     else:
         print(return_str)
         return return_str
@@ -81,7 +152,8 @@ def device_type_check():
             return_str = item
             sum_check.append(item)
     if len(sum_check) != 1:
-        tk.messagebox.showerror(message='You need to have to have a valid # of values for Contact Type')
+        pass
+        # tk.messagebox.showerror(message='You need to have to have a valid # of values for Contact Type')
     else:
         print(return_str)
         return return_str
@@ -89,22 +161,30 @@ def device_type_check():
 
 tk.Button(add_data_frame, text="TEst for contact type", command=contact_type_check).place(x=200, y=200)
 tk.Button(add_data_frame, text="Test for device type", command=device_type_check).place(x=200, y=240)
+tk.Button(add_data_frame, text="Test for null data", command=null_check).place(x=500, y=500)
 # Variables that ttk.Entry & tk.Text outputs to. Defined as data_var.
 # Must have some type of function to sort through the checkboxes and detirmines which has value. and use it
 
 name_var = tk.StringVar()
-age_var = tk.IntVar()
-gender_var = tk.StringVar()
-contact_type_var = tk.StringVar()
+age_var = tk.StringVar()
+
+gender_entry_male_var = tk.StringVar()
+gender_entry_female_var = tk.StringVar()
+gender_entry_other_var = tk.StringVar()
+
 device_type_var = tk.StringVar()
 date_of_service_var = tk.StringVar()
 date_of_contact_var = tk.StringVar()
+contact_info_var = tk.StringVar()
+contact_info_var.set("Email@Gmail")
 time_of_contact_var = tk.StringVar()
 difficulty_var = tk.StringVar()
 payment_var = tk.StringVar()
+# Separating similar fields. Below is Contact type. Below that is device type
 is_facebook = tk.StringVar()
 is_email = tk.StringVar()
 is_call = tk.StringVar()
+
 is_desktop = tk.StringVar()
 is_phone = tk.StringVar()
 is_laptop = tk.StringVar()
@@ -119,19 +199,23 @@ age_entry = ttk.Entry(add_data_frame, textvariable=age_var)
 # Default value is '0'. .delete() gets rid of that. It has no proper purpose
 age_entry.delete("0")
 
-gender_label = ttk.Label(add_data_frame, text="Male    Female   Other")
+gender_label = ttk.Label(add_data_frame, text="Male         Female        Other")
 
 # Unsure if not adding an offvalue= implies 'NoneType'. Which is what i want. Leaving for now
-gender_entry_male = ttk.Checkbutton(add_data_frame, onvalue="Male", style="default.TCheckbutton")
-gender_entry_female = ttk.Checkbutton(add_data_frame, onvalue="Female", style="default.TCheckbutton")
-gender_entry_other = ttk.Checkbutton(add_data_frame, onvalue="Other", style="default.TCheckbutton")
+gender_entry_male = ttk.Checkbutton(add_data_frame, onvalue="Male", style="default.TCheckbutton",
+                                    variable=gender_entry_male_var)
+gender_entry_female = ttk.Checkbutton(add_data_frame, onvalue="Female", style="default.TCheckbutton",
+                                      variable=gender_entry_female_var)
+gender_entry_other = ttk.Checkbutton(add_data_frame, onvalue="Other", style="default.TCheckbutton",
+                                     variable=gender_entry_other_var)
 
 # Clears the boxes of the weird default state. To an unchecked state
 gender_entry_male.state(["!alternate"])
 gender_entry_female.state(["!alternate"])
 gender_entry_other.state(["!alternate"])
 
-contact_type_label = ttk.Label(add_data_frame, text="Contact Type:")
+contact_type_label = ttk.Label(add_data_frame, text="Contact Info & Type:")
+contact_info_entry = ttk.Entry(add_data_frame, textvariable=contact_info_var)
 contact_type_info = ttk.Label(add_data_frame, text="FaceBook    Email     Call  ")
 contact_type_entry_facebook = ttk.Checkbutton(add_data_frame, offvalue="", onvalue="FaceBook",
                                               style="default.TCheckbutton", variable=is_facebook)
@@ -149,12 +233,13 @@ problem_label = ttk.Label(add_data_frame, text="Problem:")
 problem_entry = tk.Text(add_data_frame, width=40, height=5, font=("Arial", 10))
 
 # tk.Text cannot map to a StringVar() so the output is down here :)
-problem_var = problem_entry.get('1.0', 'end')
+problem_var = problem_entry.get('1.0', 'end-1c')
 
 solution_label = ttk.Label(add_data_frame, text="Solution:")
 solution_entry = tk.Text(add_data_frame, width=40, height=5, font=("Arial", 10))
 
-solution_var = problem_entry.get('1.0', 'end')
+solution_var = solution_entry.get('1.0', 'end-1c')
+
 
 device_type_label = ttk.Label(add_data_frame, text="Desktop    Phone    Laptop")
 device_type_label_other = ttk.Label(add_data_frame, text="Other?")
@@ -194,15 +279,16 @@ age_label.place(x=20, y=80)
 age_entry.place(x=20, y=100)
 
 gender_label.place(x=20, y=140)
-gender_entry_male.place(x=20, y=160)
-gender_entry_female.place(x=65, y=160)
-gender_entry_other.place(x=110, y=160)
+gender_entry_male.place(x=30, y=160)
+gender_entry_female.place(x=85, y=160)
+gender_entry_other.place(x=140, y=160)
 
 contact_type_label.place(x=20, y=180)
 contact_type_info.place(x=20, y=200)
 contact_type_entry_facebook.place(x=30, y=220)
 contact_type_entry_email.place(x=85, y=220)
 contact_type_entry_call.place(x=140, y=220)
+contact_info_entry.place(x=20, y=240)
 
 problem_label.place(x=450, y=20)
 problem_entry.place(x=450, y=40)
@@ -210,26 +296,26 @@ problem_entry.place(x=450, y=40)
 solution_label.place(x=450, y=130)
 solution_entry.place(x=450, y=150)
 
-device_type_label.place(x=20, y=240)
-device_type_label_other.place(x=160, y=280)
-device_type_entry_desktop.place(x=30, y=260)
-device_type_entry_phone.place(x=85, y=260)
-device_type_entry_laptop.place(x=140, y=260)
-device_type_entry_other.place(x=20, y=280)
+device_type_label.place(x=20, y=280)
+device_type_label_other.place(x=160, y=300)
+device_type_entry_desktop.place(x=30, y=300)
+device_type_entry_phone.place(x=85, y=300)
+device_type_entry_laptop.place(x=140, y=300)
+device_type_entry_other.place(x=20, y=320)
 
-date_of_service_label.place(x=20, y=320)
-date_of_service_entry.place(x=20, y=340)
+date_of_service_label.place(x=20, y=360)
+date_of_service_entry.place(x=20, y=380)
 
-date_of_contact_label.place(x=20, y=380)
-date_of_contact_entry.place(x=20, y=400)
+date_of_contact_label.place(x=20, y=420)
+date_of_contact_entry.place(x=20, y=440)
 
-time_of_contact_label.place(x=20, y=440)
-time_of_contact_entry.place(x=20, y=460)
+time_of_contact_label.place(x=20, y=480)
+time_of_contact_entry.place(x=20, y=500)
 
-difficulty_label.place(x=20, y=500)
-difficulty_entry.place(x=20, y=520)
+difficulty_label.place(x=20, y=540)
+difficulty_entry.place(x=20, y=560)
 
-payment_label.place(x=20, y=560)
-payment_entry.place(x=20, y=580)
+payment_label.place(x=20, y=600)
+payment_entry.place(x=20, y=620)
 
 root.mainloop()
