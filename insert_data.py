@@ -1,20 +1,20 @@
 import sqlite3
 import tkinter.messagebox
 from tkinter import messagebox
-from main import uuid_gen
 # Use uuid_gen() to create the unique ID
 
 
-def add_data(name, age, gender, contact_type, contact_info, problem, solution, device_type, time_of_contact,
-             date_of_contact, date_of_service,
-             difficulty, payment, id): #13
+def add_data(name, age, gender, type_of_contact, contact_info, problem, solution, device_type, time_of_contact,
+             date_of_contact, date_of_service, difficulty, payment, unique_id):
     con = sqlite3.connect("./MAIN.DB")
     cur = con.cursor()
-    cur.execute("INSERT INTO {} VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)".format(name, age, gender, contact_type,
-                                                                           contact_info, problem, solution, device_type,
-                                                                           time_of_contact, date_of_contact,
-                                                                           date_of_service, difficulty, payment, id))
-    con.commit()
-    tkinter.messagebox.Message("Data Entered Successfully")
+    try:
+        cur.execute("INSERT INTO MAIN VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (name, age, gender, type_of_contact,
+                    contact_info, problem, solution, device_type, time_of_contact, date_of_contact, date_of_service,
+                    difficulty, payment, unique_id,))
+        con.commit()
+        tkinter.messagebox.Message("Data Entered Successfully")
+    except:
+        tkinter.messagebox.showerror(message="Data input failiure")
 
 
