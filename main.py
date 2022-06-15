@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import uuid
 from tkinter import messagebox
-import insert_data
+from insert_data import add_data
 
 # Settings for the app
 root = tk.Tk()
@@ -50,54 +50,60 @@ def null_check():
     list_of_data = {
         "Name Field": name_var.get(),
         "Age Field": age_var.get(),
-        "Gender Field": gender_check(),
+        "Gender Field": gender_check(),  #prolem
         "Contact Type Field": contact_type_check(),
         "Contact Info Field": contact_info_var.get(),
-        "Problem Field": problem_entry.get('1.0', 'end-1c'),  # Produces '\n'
+        "Problem Field": problem_entry.get('1.0', 'end-1c'),
         "Solution Field": solution_entry.get('1.0', 'end-1c'),
-        "Device Type Field": device_type_check(),
+        "Device Type Field": device_type_check(),  #probl
+        "Time of Contact": time_of_contact_var.get(),
         "Date of Contact Field": date_of_contact_var.get(),
         "Date of Service Field": date_of_service_var.get(),
         "Difficulty Field": difficulty_var.get(),
         "Payment Field": payment_var.get(),
         "Should never fail": uuid_gen()
     }
+    # Creates a list of entries that were missed
     for entry in list_of_data.items():
         if entry[1] == '':
             failed_bool = True
             list_of_error.append(entry[0])
         print(f"entry: {entry[1]}")
     if failed_bool is True:
-        tk.messagebox.showerror(message=f"Dta missing: \n{list_of_error}")
+        tk.messagebox.showerror(message=f"Data missing ! \n{list_of_error}")
     else:
         print("Full data, moving to process...")
         print(f'All data: {list_of_data.values()}')
         name_entry.delete(0, 'end')
         age_entry.delete(0, 'end')
 
-        gender_entry_male.state(["!alternate"])
-        gender_entry_female.state(["!alternate"])
-        gender_entry_other.state(["!alternate"])
+        gender_entry_male.state(["!selected", "focus"])
+        gender_entry_female.state(["!selected", "focus"])
+        gender_entry_other.state(["!selected", "focus"])
 
         contact_info_entry.delete(0, 'end')
 
-        contact_type_entry_facebook.state(["!alternate"])
-        contact_type_entry_email.state(["!alternate"])
-        contact_type_entry_call.state(["!alternate"])
+        contact_type_entry_facebook.state(["!selected", "focus"])
+        contact_type_entry_email.state(["!selected", "focus"])
+        contact_type_entry_call.state(["!selected", "focus"])
 
         problem_entry.delete("1.0", 'end')
         solution_entry.delete("1.0", 'end')
 
-        device_type_entry_desktop.state(["selected"])
-        device_type_entry_desktop.state(["!alternate"])
-        device_type_entry_phone.state(["!alternate"])
-        device_type_entry_laptop.state(["!alternate"])
+        device_type_entry_desktop.state(["!selected", "focus"])
+        device_type_entry_phone.state(["!selected", "focus"])
+        device_type_entry_laptop.state(["!selected", "focus"])
 
         date_of_contact_entry.delete(0, 'end')
         date_of_service_entry.delete(0, 'end')
         difficulty_entry.delete(0, 'end')
         payment_entry.delete(0, 'end')
-        # insert_data.add_data(list_of_data.values())
+        count = 0
+        input_data = list(list_of_data.values())
+        print(count)
+        add_data(input_data[0], input_data[1], input_data[2], input_data[3], input_data[4], input_data[5], input_data[6]
+                 , input_data[7], input_data[8], input_data[9], input_data[10], input_data[11], input_data[12],
+                 uuid_gen())
 
 
 def gender_check():
@@ -112,11 +118,7 @@ def gender_check():
         if item != "":
             return_str = item
             sum_check.append(item)
-    if len(sum_check) != 1:
-        tk.messagebox.showerror(message='You need to have a valid # of values for Contact Type')
-    else:
-        print(return_str)
-        return return_str
+    return return_str
 
 
 def contact_type_check():
@@ -131,11 +133,7 @@ def contact_type_check():
         if item != "":
             return_str = item
             sum_check.append(item)
-    if len(sum_check) != 1:
-        tk.messagebox.showerror(message='You need to have a valid # of values for Contact Type')
-    else:
-        print(return_str)
-        return return_str
+    return return_str
 
 
 def device_type_check():
@@ -155,7 +153,6 @@ def device_type_check():
         pass
         # tk.messagebox.showerror(message='You need to have to have a valid # of values for Contact Type')
     else:
-        print(return_str)
         return return_str
 
 
@@ -210,9 +207,9 @@ gender_entry_other = ttk.Checkbutton(add_data_frame, onvalue="Other", style="def
                                      variable=gender_entry_other_var)
 
 # Clears the boxes of the weird default state. To an unchecked state
-gender_entry_male.state(["!alternate"])
-gender_entry_female.state(["!alternate"])
-gender_entry_other.state(["!alternate"])
+gender_entry_male.state(["!selected", "focus"])
+gender_entry_female.state(["!selected", "focus"])
+gender_entry_other.state(["!selected", "focus"])
 
 contact_type_label = ttk.Label(add_data_frame, text="Contact Info & Type:")
 contact_info_entry = ttk.Entry(add_data_frame, textvariable=contact_info_var)
@@ -224,9 +221,9 @@ contact_type_entry_email = ttk.Checkbutton(add_data_frame, offvalue="", onvalue=
 contact_type_entry_call = ttk.Checkbutton(add_data_frame, offvalue="", onvalue="Call", style="default.TCheckbutton",
                                           variable=is_call)
 
-contact_type_entry_facebook.state(["!alternate"])
-contact_type_entry_email.state(["!alternate"])
-contact_type_entry_call.state(["!alternate"])
+contact_type_entry_facebook.state(["!selected", "focus"])
+contact_type_entry_email.state(["!selected", "focus"])
+contact_type_entry_call.state(["!selected", "focus"])
 
 problem_label = ttk.Label(add_data_frame, text="Problem:")
 # tk.Text needed because ttk.Entry cannot support multiple lines
@@ -251,9 +248,9 @@ device_type_entry_laptop = ttk.Checkbutton(add_data_frame, onvalue="Laptop", sty
                                            variable=is_laptop, offvalue="")
 device_type_entry_other = ttk.Entry(add_data_frame, textvariable=device_type_var)
 
-device_type_entry_desktop.state(["!alternate"])
-device_type_entry_phone.state(["!alternate"])
-device_type_entry_laptop.state(["!alternate"])
+device_type_entry_desktop.state(["!selected", "focus"])
+device_type_entry_phone.state(["!selected", "focus"])
+device_type_entry_laptop.state(["!selected", "focus"])
 
 date_of_service_label = ttk.Label(add_data_frame, text="Date of service: (YY/MM/DD)")
 date_of_service_entry = ttk.Entry(add_data_frame, textvariable=date_of_service_var)
