@@ -29,7 +29,7 @@ class main_logic(tk.Tk):
             "Date of Service Field": None,
             "Difficulty Field": None,
             "Payment Field": None,
-            "Should never fail": None
+            "Uniqueid": None
         }
         # Defining the style for the two tkinter frames & checkboxes
         main_style = ttk.Style()
@@ -93,6 +93,7 @@ class AddingData(tk.Frame):
         self.time_of_contact_var = tk.StringVar()
         self.difficulty_var = tk.StringVar()
         self.payment_var = tk.StringVar()
+        self.uniqueid_var = tk.StringVar()
         # Separating similar fields. Below is Contact type. Below that is device type
         self.is_facebook = tk.StringVar()
         self.is_email = tk.StringVar()
@@ -184,6 +185,9 @@ class AddingData(tk.Frame):
         self.payment_label = ttk.Label(self, text="Payment (8) as in 8 dollars")
         self.payment_entry = ttk.Entry(self, textvariable=self.payment_var)
 
+        self.uniqueid_label = ttk.Label(self, text="Uniqueid (Unchangeable)")
+        self.uniqueid_entry = ttk.Entry(self, textvariable=self.uniqueid_var, state="disabled", width=35)
+
         # Placing all the Widgets & Labels
 
         self.name_label.place(x=20, y=20)
@@ -209,6 +213,9 @@ class AddingData(tk.Frame):
 
         self.solution_label.place(x=450, y=130)
         self.solution_entry.place(x=450, y=150)
+
+        self.uniqueid_label.place(x=450, y=240)
+        self.uniqueid_entry.place(x=450, y=270)
 
         self.device_type_label.place(x=20, y=280)
         self.device_type_label_other.place(x=160, y=300)
@@ -246,10 +253,18 @@ class AddingData(tk.Frame):
         self.text_values(self.problem_entry, self.controller.shared_data["Problem Field"])
         self.text_values(self.solution_entry, self.controller.shared_data["Solution Field"])
         self.device_device(self.controller.shared_data['Device Type Field'])
-        self.entry_values(self.time_of_contact_entry, self.controller.shared_data['Time of Contact Field'])
-        self.entry_values(self.time_of_contact_entry, self.controller.shared_data['Date of Contact Field'])
-        self.entry_values(self.time_of_contact_entry, self.controller.shared_data['Difficultyt'])
-        self.entry_values(self.time_of_contact_entry, self.controller.shared_data['Payment Field'])
+        self.entry_values(self.time_of_contact_entry, self.controller.shared_data['Time of Contact'])
+        self.entry_values(self.date_of_contact_entry, self.controller.shared_data['Date of Contact Field'])
+        self.entry_values(self.date_of_service_entry, self.controller.shared_data['Date of Service Field'])
+        self.entry_values(self.difficulty_entry, self.controller.shared_data['Difficulty Field'])
+        self.entry_values(self.payment_entry, self.controller.shared_data['Payment Field'])
+        self.id_insert(self.controller.shared_data["Should never fail"])
+
+    def id_insert(self, val):
+        self.uniqueid_entry.configure(state='normal')
+        self.uniqueid_entry.delete(0, "end")
+        self.uniqueid_entry.insert(0, val)
+        self.uniqueid_entry.config(state='disabled')
 
     def gender_decide(self, val):
         if val == "Female":
@@ -323,7 +338,7 @@ class AddingData(tk.Frame):
             "Date of Service Field": self.date_of_service_var.get(),
             "Difficulty Field": self.difficulty_var.get(),
             "Payment Field": self.payment_var.get(),
-            "Should never fail": self.uuid_gen()
+            "Should never fail": self.uniqueid_entry.get()
         }
         # Creates a list of entries that were missed
         print("Full data, moving to process...")
@@ -354,10 +369,13 @@ class AddingData(tk.Frame):
         self.payment_entry.delete(0, 'end')
         count = 0
         input_data = list(list_of_data.values())
+        if input_data[13] == '':
+            print("getting a new UUID")
+            input_data[13] = self.uuid_gen()
         print(count)
         add_data(input_data[0], input_data[1], input_data[2], input_data[3], input_data[4], input_data[5], input_data[6]
                  , input_data[7], input_data[8], input_data[9], input_data[10], input_data[11], input_data[12],
-                 self.uuid_gen())
+                 input_data[13])
 
 
     def gender_check(self):
