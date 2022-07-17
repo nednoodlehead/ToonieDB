@@ -239,9 +239,9 @@ class AddingData(tk.Frame):
         self.payment_label.place(x=20, y=600)
         self.payment_entry.place(x=20, y=620)
 
-        self.bind("<<INCOMING>>", self.ackn)
+        self.bind("<<INCOMING>>", self.update_data_transfer)
 
-    def ackn(self, event=None):
+    def update_data_transfer(self, event=None):
         print("acknowledged. printing data:")
         print(self.controller.shared_data)
         # Gets each info from the shared controller data and inserts it into it's respepctive field !
@@ -343,6 +343,18 @@ class AddingData(tk.Frame):
         # Creates a list of entries that were missed
         print("Full data, moving to process...")
         print(f'All data: {list_of_data.values()}')
+
+        self.destroy_data()
+
+        input_data = list(list_of_data.values())
+        if input_data[13] == '':
+            print("getting a new UUID")
+            input_data[13] = self.uuid_gen()
+        add_data(input_data[0], input_data[1], input_data[2], input_data[3], input_data[4], input_data[5], input_data[6]
+                 , input_data[7], input_data[8], input_data[9], input_data[10], input_data[11], input_data[12],
+                 input_data[13])
+
+    def destroy_data(self):
         self.name_entry.delete(0, 'end')
         self.age_entry.delete(0, 'end')
 
@@ -367,15 +379,9 @@ class AddingData(tk.Frame):
         self.date_of_service_entry.delete(0, 'end')
         self.difficulty_entry.delete(0, 'end')
         self.payment_entry.delete(0, 'end')
-        count = 0
-        input_data = list(list_of_data.values())
-        if input_data[13] == '':
-            print("getting a new UUID")
-            input_data[13] = self.uuid_gen()
-        print(count)
-        add_data(input_data[0], input_data[1], input_data[2], input_data[3], input_data[4], input_data[5], input_data[6]
-                 , input_data[7], input_data[8], input_data[9], input_data[10], input_data[11], input_data[12],
-                 input_data[13])
+        self.uniqueid_entry.configure(state='normal')
+        self.uniqueid_entry.delete(0, 'end')
+        self.uniqueid_entry.configure(state='disabled')
 
 
     def gender_check(self):
@@ -470,6 +476,9 @@ class view_data(tk.Frame):
         self.main_tree.column("Payment", width=mn_wid, stretch=False)
         self.main_tree.column("ID", width=mn_wid, stretch=False)
         # Adding headings
+        self.list_of_columns = ["Name", "Name", "Age", "Gender", "Type_of_contact", "Contact_info", "Problem", "Solution",
+                                "Device_type", "Time_of_contact", "Date_of_contact", "Date_of_service", "Difficulty",
+                                "Payment", "Unique_ID"]
         self.main_tree.heading("#0", text='', anchor="center")
         self.main_tree.heading("Name", text="Name", anchor="center")
         self.main_tree.heading("Age", text="Age", anchor="center")
@@ -491,6 +500,17 @@ class view_data(tk.Frame):
         self.delete_edit_popup.add_command(label="Delete", command=lambda: self.delete_entry('x'))
         self.delete_edit_popup.add_command(label='Edit', command=lambda: self.edit_entry("yo"))
         tk.Button(self, text="Refresh", command=self.refresh_data).place(x=1250, y=10)
+        tk.Label(self, text="Find").place(x=850, y=565)
+        self.string_entry_var = tk.StringVar()
+        self.string_entry = ttk.Entry(self, textvariable=self.string_entry_var)
+        self.string_entry.place(x=885, y=565)
+        tk.Label(self, text='In column: ').place(x=1015, y=565)
+        self.column_menu_var = tk.StringVar()
+        self.column_menu = ttk.OptionMenu(self, self.column_menu_var, *self.list_of_columns)
+        self.column_menu.place(x=1085, y=565)
+        self.search_button = tk.Button(self, text="Search !", command=lambda: self.filter(self.string_entry.get(),
+                                                                                          self.column_menu_var.get()))
+        self.search_button.place(x=1085, y=535)
         self.main_tree.bind("<Button-3>", self.popup)
         self.query_main()
 # view_data_frame functions ! #
@@ -501,8 +521,8 @@ class view_data(tk.Frame):
         cur.execute("SELECT * FROM main")
         rows = cur.fetchall()
         for row in rows:
-            self.main_tree.insert('', tk.END, values=(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8],
-                                                 row[9], row[10], row[11], row[12], row[13]))
+            self.main_tree.insert('', tk.END, values=(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7],
+                                                      row[8], row[9], row[10], row[11], row[12], row[13]))
         con.close()
 
     def delete_data(self, obj):
@@ -558,8 +578,14 @@ class view_data(tk.Frame):
         # Sends the signal -> controller, controller creates event -> adddata listens pulls the shared data and insertit
         self.controller.create_event()
 
-
-
+    def filter(self, input_string, input_column):
+        con = sqlite3.connect("./MAIN.DB")
+        cur = con.cursor()
+        x = cur.execute(f"SELECT * FROM MAIN WHERE {input_column}=?", (input_string,))
+        self.main_tree.delete(*self.main_tree.get_children())
+        for row in x:
+            self.main_tree.insert('', tk.END, values=(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7],
+                                                      row[8], row[9], row[10], row[11], row[12], row[13]))
 
     def popup(self, event):
         try:
