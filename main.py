@@ -513,6 +513,7 @@ class view_data(tk.Frame):
         self.search_button.place(x=1085, y=535)
         self.main_tree.bind("<Button-3>", self.popup)
         self.query_main()
+
 # view_data_frame functions ! #
 
     def query_main(self):
@@ -531,6 +532,7 @@ class view_data(tk.Frame):
         cur = con.cursor()
         cur.execute('DELETE from main where Unique_id = ?', (obj[13],))
         con.commit()
+        con.close()
 
 
     def refresh_data(self):

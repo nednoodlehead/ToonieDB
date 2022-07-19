@@ -34,6 +34,7 @@ def create_main():
     Unique_ID Text NOT NULL PRIMARY KEY)
     """)
     con.commit()
+    con.close()
 
 
 check_out()

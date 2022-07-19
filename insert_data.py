@@ -44,4 +44,5 @@ def add_data(name, age, gender, type_of_contact, contact_info, problem, solution
          Where Unique_ID=?
          """, (values))
         con.commit()
+        con.close()
 
