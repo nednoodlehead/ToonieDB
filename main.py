@@ -3,9 +3,7 @@ import tkinter as tk
 import tkinter.messagebox
 from tkinter import ttk
 import uuid
-from tkinter import messagebox
 from insert_data import add_data
-from tkinter.messagebox import Message
 
 # Settings for the app
 class main_logic(tk.Tk):
@@ -74,7 +72,7 @@ class AddingData(tk.Frame):
         self.controller = controller
         self.configure(bg="#656489")
 
-        tk.Button(self, text="Enter Data!", command=self.null_check).place(x=500, y=500)
+        tk.Button(self, text="Enter Data!", command=self.enter_data).place(x=500, y=500)
         # Variables that ttk.Entry & tk.Text outputs to. Defined as data_var.
         # Must have some type of function to sort through the checkboxes and detirmines which has value. and use it
 
@@ -321,7 +319,7 @@ class AddingData(tk.Frame):
         return z
 
 
-    def null_check(self):
+    def enter_data(self):
         # Revemped version that does not fail data input if data is missing. Enters anyway. Should allow more
         # dynamic and easier to use DBing of relevent information
         list_of_data = {
@@ -347,6 +345,7 @@ class AddingData(tk.Frame):
         self.destroy_data()
 
         input_data = list(list_of_data.values())
+        # Checks if a UUID exists in the current dataset. if it doesn't, it gives it a new one
         if input_data[13] == '':
             print("getting a new UUID")
             input_data[13] = self.uuid_gen()
@@ -354,6 +353,7 @@ class AddingData(tk.Frame):
                  , input_data[7], input_data[8], input_data[9], input_data[10], input_data[11], input_data[12],
                  input_data[13])
 
+    # Removes all data from the input boxes and entries
     def destroy_data(self):
         self.name_entry.delete(0, 'end')
         self.age_entry.delete(0, 'end')
@@ -557,29 +557,30 @@ class view_data(tk.Frame):
     def edit_entry(self, event):
         for item in self.main_tree.selection():
             chosen_entry = self.main_tree.item(item, 'values')
-        print(chosen_entry)
-        self.controller.shared_data = {
-            "Name Field": chosen_entry[0],
-            "Age Field": chosen_entry[1],
-            "Gender Field": chosen_entry[2],
-            "Contact Type Field": chosen_entry[3],
-            "Contact Info Field": chosen_entry[4],
-            "Problem Field": chosen_entry[5],
-            "Solution Field": chosen_entry[6],
-            "Device Type Field": chosen_entry[7],
-            "Time of Contact": chosen_entry[8],
-            "Date of Contact Field": chosen_entry[9],
-            "Date of Service Field": chosen_entry[10],
-            "Difficulty Field": chosen_entry[11],
-            "Payment Field": chosen_entry[12],
-            "Should never fail": chosen_entry[13]
-        }
-        print(self.controller.shared_data)
-        # Switches to the adding_data frame
-        self.controller.show_frame(AddingData)
-        # Sends the signal -> controller, controller creates event -> adddata listens pulls the shared data and insertit
-        self.controller.create_event()
+            print(chosen_entry)
+            self.controller.shared_data = {
+                "Name Field": chosen_entry[0],
+                "Age Field": chosen_entry[1],
+                "Gender Field": chosen_entry[2],
+                "Contact Type Field": chosen_entry[3],
+                "Contact Info Field": chosen_entry[4],
+                "Problem Field": chosen_entry[5],
+                "Solution Field": chosen_entry[6],
+                "Device Type Field": chosen_entry[7],
+                "Time of Contact": chosen_entry[8],
+                "Date of Contact Field": chosen_entry[9],
+                "Date of Service Field": chosen_entry[10],
+                "Difficulty Field": chosen_entry[11],
+                "Payment Field": chosen_entry[12],
+                "Should never fail": chosen_entry[13]
+            }
+            print(self.controller.shared_data)
+            # Switches to the adding_data frame
+            self.controller.show_frame(AddingData)
+            # Sends the signal -> controller, controller creates event -> adddata listens,pulls the shared data, adds it
+            self.controller.create_event()
 
+    # Filter function used for custom queries of data
     def filter(self, input_string, input_column):
         con = sqlite3.connect("./MAIN.DB")
         cur = con.cursor()
