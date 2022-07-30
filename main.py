@@ -73,6 +73,7 @@ class AddingData(tk.Frame):
         self.configure(bg="#656489")
 
         tk.Button(self, text="Enter Data!", command=self.enter_data).place(x=500, y=500)
+        tk.Button(self, text='Fake Enter Data!', command=self.fake_enter_data).place(x=580, y=500)
         # Variables that ttk.Entry & tk.Text outputs to. Defined as data_var.
         # Must have some type of function to sort through the checkboxes and detirmines which has value. and use it
 
@@ -234,10 +235,31 @@ class AddingData(tk.Frame):
         self.difficulty_label.place(x=20, y=540)
         self.difficulty_entry.place(x=20, y=560)
 
-        self.payment_label.place(x=20, y=600)
-        self.payment_entry.place(x=20, y=620)
+        self.payment_label.place(x=220, y=540)
+        self.payment_entry.place(x=220, y=560)
 
         self.bind("<<INCOMING>>", self.update_data_transfer)
+
+        self.test_types = tk.Button(self, text='test types', command=self.tester)
+        self.test_types.place(x=500, y=20)
+
+    def tester(self):
+        print(f'isphone: {self.is_phone.get()}')
+        print(f'islaptop: {self.is_laptop.get()}')
+        print(f'isdesktop: {self.is_desktop.get()}')
+        print(f'devicetypevar: {self.device_type_var.get()}')
+        print('---------')
+        print(f'isfacebook: {self.is_facebook.get()}')
+        print(f'facebook status: {self.contact_type_entry_facebook.state()}')
+        print(f'iscall: {self.is_call.get()}')
+        print(f'call status: {self.contact_type_entry_call.state()}')
+        print(f'isemail: {self.is_email.get()}')
+        print(f'email status: {self.contact_type_entry_email.state()}')
+        print('-----------')
+        print(f'is man: {self.gender_entry_male_var.get()}')
+        print(f'is female: {self.gender_entry_female_var.get()}')
+        print(f'isother: {self.gender_entry_other_var.get()}')
+
 
     def update_data_transfer(self, event=None):
         print("acknowledged. printing data:")
@@ -266,28 +288,38 @@ class AddingData(tk.Frame):
 
     def gender_decide(self, val):
         if val == "Female":
+            print('FEMALE SELECTED')
             self.gender_entry_female.state(['selected'])
         elif val == "Male":
+            print("MALE SELECTED")
             self.gender_entry_male.state(['selected'])
         else:
+            print("OTHER GENDER SELECTED")
             self.gender_entry_other.state(['selected'])
 
     def contact_decide(self, val):
         if val == "FaceBook":
+            print('FACEBOOK SELECTED')
             self.contact_type_entry_facebook.state(['selected'])
         elif val == "Email":
+            print("EMAIL SELECTED")
             self.contact_type_entry_email.state(['selected'])
         else:
+            print("CALL SELECTED (else)")
             self.contact_type_entry_call.state(['selected'])
 
     def device_device(self, val):
         if val == "Desktop":
+            print("DESKTOP SELECTED")
             self.device_type_entry_desktop.state(['selected'])
         elif val == "Phone":
+            print("PHONE SELECTED")
             self.device_type_entry_phone.state(['selected'])
         elif val == "Laptop":
+            print("LAPTOP SELECTED")
             self.device_type_entry_laptop.state(['selected'])
         else:
+            print("OTHER DEVICE TYPE (ELSE)")
             self.entry_values(self.device_type_entry_other, val)
 
 
@@ -319,6 +351,27 @@ class AddingData(tk.Frame):
         return z
 
 
+    def fake_enter_data(self):
+        list_of_data = {
+            "Name Field": self.name_var.get(),
+            "Age Field": self.age_var.get(),
+            "Gender Field": self.gender_check(),  #prolem
+            "Contact Type Field": self.contact_type_check(),
+            "Contact Info Field": self.contact_info_var.get(),
+            "Problem Field": self.problem_entry.get('1.0', 'end-1c'),
+            "Solution Field": self.solution_entry.get('1.0', 'end-1c'),
+            "Device Type Field": self.device_type_check(),  #probl
+            "Time of Contact": self.time_of_contact_var.get(),
+            "Date of Contact Field": self.date_of_contact_var.get(),
+            "Date of Service Field": self.date_of_service_var.get(),
+            "Difficulty Field": self.difficulty_var.get(),
+            "Payment Field": self.payment_var.get(),
+            "Should never fail": self.uniqueid_entry.get()
+        }
+        print(list_of_data)
+
+
+
     def enter_data(self):
         # Revemped version that does not fail data input if data is missing. Enters anyway. Should allow more
         # dynamic and easier to use DBing of relevent information
@@ -338,10 +391,8 @@ class AddingData(tk.Frame):
             "Payment Field": self.payment_var.get(),
             "Should never fail": self.uniqueid_entry.get()
         }
-        # Creates a list of entries that were missed
         print("Full data, moving to process...")
         print(f'All data: {list_of_data.values()}')
-
         self.destroy_data()
 
         input_data = list(list_of_data.values())
@@ -386,52 +437,56 @@ class AddingData(tk.Frame):
 
     def gender_check(self):
         return_str = ''
-        sum_check = []
-        check_list = [
-            self.gender_entry_male_var.get(),
-            self.gender_entry_female_var.get(),
-            self.gender_entry_other_var.get()
-        ]
-        for item in check_list:
-            if item != "":
-                return_str = item
-                sum_check.append(item)
+        check_dict = {
+            self.gender_entry_male.state(): "Male",
+            self.gender_entry_female.state(): "Female",
+            self.gender_entry_other.state(): "Other"
+        }
+        # Checks the tuple of the state of checkbutton and if 'selected' is found in one of the tuple values
+        # the value in the key-value pair is turned into return_str
+        for state, value in check_dict.items():
+            for item in state:
+                if "selected" in item:
+                    return_str = value
+
+        print(f'gender: {return_str}')
         return return_str
 
 
     def contact_type_check(self):
         return_str = ''
-        sum_check = []
-        check_list = [
-            self.is_facebook.get(),
-            self.is_call.get(),
-            self.is_email.get()
-        ]
-        for item in check_list:
-            if item != "":
-                return_str = item
-                sum_check.append(item)
+        check_dict = {
+            self.contact_type_entry_facebook.state(): "Facebook",
+            self.contact_type_entry_call.state(): "Call",
+            self.contact_type_entry_email.state(): "Email"
+        }
+        for state, value in check_dict.items():
+            for item in state:
+                if "selected" in item:
+                    return_str = value
+
+        print(f'gender: {return_str}')
         return return_str
 
 
     def device_type_check(self):
         return_str = ''
-        sum_check = []
-        check_list = [
-            self.is_desktop.get(),
-            self.is_phone.get(),
-            self.is_laptop.get(),
-            self.device_type_var.get()
-        ]
-        for item in check_list:
-            if item != "":
-                return_str = item
-                sum_check.append(item)
-        if len(sum_check) != 1:
-            pass
-            # tk.messagebox.showerror(message='You need to have to have a valid # of values for Contact Type')
-        else:
-            return return_str
+        check_dict = {
+            self.device_type_entry_desktop.state(): "Desktop",
+            self.device_type_entry_phone.state(): "Phone",
+            self.device_type_entry_laptop.state(): "Laptop"
+            #self.device_type_var.get()
+        }
+        for state, value in check_dict.items():
+            for item in state:
+                if "selected" in item:
+                    return_str = value
+        if return_str == '':
+            print(f"Special type of device: {self.device_type_var.get()}")
+            return_str = self.device_type_var.get()
+
+        print(f'gender: {return_str}')
+        return return_str
 
 
 
